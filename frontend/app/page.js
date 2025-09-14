@@ -1,10 +1,10 @@
-
-
 "use client"
 import Link from "next/link";
 import Image from "next/image";
 import React, { useState } from "react";
 import TicketCard from "./components/TicketCard";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -27,7 +27,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("http://localhost:8000/upload-tickets", {
+      const res = await fetch(`${API_URL}/upload-tickets`, {
         method: "POST",
         body: formData,
       });

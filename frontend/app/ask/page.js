@@ -4,6 +4,7 @@ import Link from "next/link";
 import Tag from "../components/Tag";
 
 const RAG_TOPICS = ["How-to", "Product", "Best practices", "API/SDK", "SSO"];
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function InteractiveAgent() {
   const [query, setQuery] = useState("");
@@ -14,7 +15,7 @@ export default function InteractiveAgent() {
   const [error, setError] = useState(null);
 
   const classifyTicket = async (text) => {
-    const res = await fetch("http://localhost:8000/generate-response", {
+    const res = await fetch(`${API_URL}/generate-response`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

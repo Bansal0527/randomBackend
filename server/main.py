@@ -22,7 +22,7 @@ from typing import List, Tuple
 from fastapi.middleware.cors import CORSMiddleware
 # from qdrant_client import QdrantClient
 # from langchain_qdrant import QdrantVectorStore
-from langchain_community.vectorstores import FAISS
+
 
 from langchain_qdrant import QdrantVectorStore, RetrievalMode
 from qdrant_client import QdrantClient
@@ -82,12 +82,12 @@ client = genai.Client(api_key=GOOGLE_API_KEY)
 
 qdrant_client = QdrantClient(path="./vectorStore")
 
-# Local directory for FAISS storage (relative path for deployment compatibility)
+# Local directory for  storage (relative path for deployment compatibility)
 
 
 def get_rag_response(query: str, k: int = 3) -> Tuple[str, List[str]]:
     """
-    Get RAG response for a query using the FAISS vector store and LLM.
+    Get RAG response for a query using the  vector store and LLM.
     Returns tuple of (answer, sources)
     """
     # API key loaded from .env

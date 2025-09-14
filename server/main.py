@@ -108,7 +108,7 @@ def get_rag_response(query: str, k: int = 3) -> Tuple[str, List[str]]:
         embedding=embeddings,
         url="https://1ba32a1f-70ca-4a33-91c8-33974fd96e3e.europe-west3-0.gcp.cloud.qdrant.io",
         collection_name="atlan",
-        api_key=os.environ.get("API_KEY"),,
+        api_key=os.environ.get("API_KEY"),
     )
 
         # Search for relevant documents

@@ -2,6 +2,7 @@ from langchain_community.document_loaders import RecursiveUrlLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import getpass
 import os
+from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from typing import List, Tuple
@@ -14,13 +15,15 @@ from langchain_qdrant import QdrantVectorStore
 
 
 
+load_dotenv()
 print("API KEY : ", os.environ.get("GOOGLE_API_KEY"))
 if not os.environ.get("GOOGLE_API_KEY"):
-  os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter API key for Google Gemini: ")
+    raise ValueError("GOOGLE_API_KEY not found in environment. Please set it in your .env file.")
 
 loader = RecursiveUrlLoader(
     "https://docs.atlan.com/",
-
+    max_depth=3,       # go 3 levels deep
+    max_pages=300,     # crawl up to 300 pages
 )
 
 docs = loader.load()

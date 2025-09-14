@@ -1,103 +1,242 @@
+
+
+"use client"
+import Link from "next/link";
 import Image from "next/image";
+import React, { useState } from "react";
+import TicketCard from "./components/TicketCard";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    setResult([]);
+    setError(null);
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+    setLoading(true);
+    setError(null);
+    setResult([]);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("http://localhost:8000/upload-tickets", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Failed to upload and classify tickets");
+      const data = await res.json();
+      setResult(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ background: "#f8fafc", minHeight: "100vh" }}>
+      {/* Header */}
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "space-between",
+        padding: "1rem 2rem",
+        borderBottom: "1px solid #e2e8f0",
+        background: "#fff"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ 
+            background: "#6366f1", 
+            width: "24px", 
+            height: "24px", 
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "bold" }}>◆</span>
+          </div>
+          <span style={{ fontWeight: "600", color: "#1f2937" }}>Customer Support Copilot</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Tools Navigation */}
+      <div style={{ padding: "1rem 2rem" }}>
+        <h2 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#374151", marginBottom: "1rem" }}>Tools</h2>
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem" }}>
+          <button style={{ 
+            padding: "0.5rem 1rem", 
+            background: "#6366f1", 
+            color: "#fff", 
+            border: "none", 
+            borderRadius: "6px", 
+            fontWeight: "500",
+            fontSize: "0.875rem"
+          }}>
+            Dashboard
+          </button>
+          <Link href="/ask">
+            <button style={{ 
+              padding: "0.5rem 1rem", 
+              background: "#f3f4f6", 
+              color: "#6b7280", 
+              border: "none", 
+              borderRadius: "6px", 
+              fontWeight: "500",
+              fontSize: "0.875rem",
+              cursor: "pointer"
+            }}>
+              Agent
+            </button>
+          </Link>
+        </div>
+
+        {/* Main Dashboard Content */}
+        <div style={{ background: "#fff", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+          {/* Dashboard Header */}
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center",
+            padding: "1.5rem",
+            borderBottom: "1px solid #e5e7eb"
+          }}>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: "600", color: "#111827", margin: 0 }}>
+              Bulk Ticket Classification Dashboard
+            </h3>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <form onSubmit={handleUpload} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <input
+                  type="file"
+                  accept="application/json"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  id="file-upload"
+                />
+                <label 
+                  htmlFor="file-upload"
+                  style={{ 
+                    padding: "0.5rem 1rem",
+                    background: "#6366f1",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontWeight: "500",
+                    fontSize: "0.875rem",
+                    cursor: "pointer",
+                    display: "inline-block"
+                  }}
+                >
+                  Upload JSON
+                </label>
+                {file && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ 
+                      background: "#f3f4f6", 
+                      padding: "0.25rem 0.5rem", 
+                      borderRadius: "4px", 
+                      fontSize: "0.75rem",
+                      color: "#6b7280"
+                    }}>
+                      {file.name} ✕
+                    </span>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      style={{ 
+                        padding: "0.5rem 1rem",
+                        background: loading ? "#9ca3af" : "#10b981",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        fontWeight: "500",
+                        fontSize: "0.875rem",
+                        cursor: loading ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      {loading ? "Processing..." : "Classify"}
+                    </button>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+
+          {/* Dashboard Content */}
+          <div style={{ padding: "1.5rem" }}>
+            <p style={{ 
+              color: "#6b7280", 
+              fontSize: "0.875rem", 
+              marginBottom: "2rem",
+              lineHeight: "1.5"
+            }}>
+              Upload your own JSON file to classify support tickets in bulk. The file should be an array of ticket objects, each with "id", "subject", and "body" properties.
+            </p>
+
+            {error && (
+              <div style={{ 
+                background: "#fef2f2", 
+                border: "1px solid #fecaca", 
+                borderRadius: "6px", 
+                padding: "1rem", 
+                marginBottom: "1rem" 
+              }}>
+                <p style={{ color: "#dc2626", margin: 0 }}>Error: {error}</p>
+              </div>
+            )}
+
+            {result.length === 0 && !loading && (
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                justifyContent: "center",
+                padding: "3rem",
+                color: "#6b7280"
+              }}>
+                <div style={{ 
+                  width: "48px", 
+                  height: "48px", 
+                  background: "#f3f4f6", 
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "1rem"
+                }}>
+                  <span style={{ fontSize: "24px" }}>📄</span>
+                </div>
+                <h4 style={{ margin: "0 0 0.5rem 0", fontWeight: "500" }}>No tickets to display</h4>
+                <p style={{ margin: 0, fontSize: "0.875rem" }}>Upload a JSON file to get started.</p>
+              </div>
+            )}
+
+            {loading && (
+              <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+                {[...Array(6)].map((_, index) => (
+                  <TicketCard key={`loading-${index}`} ticket={{}} isLoading={true} />
+                ))}
+              </div>
+            )}
+
+            {result.length > 0 && !loading && (
+              <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+                {result.map((ticket) => (
+                  <TicketCard key={ticket.id} ticket={ticket} isLoading={false} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

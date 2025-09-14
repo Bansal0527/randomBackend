@@ -178,7 +178,7 @@ export default function Home() {
               marginBottom: "2rem",
               lineHeight: "1.5"
             }}>
-              Upload your own JSON file to classify support tickets in bulk. The file should be an array of ticket objects, each with "id", "subject", and "body" properties.
+              Upload your own JSON file to classify support tickets in bulk. The file should be an array of ticket objects, each with &quot;id&quot;, &quot;subject&quot;, and &quot;body&quot; properties.
             </p>
 
             {error && (
